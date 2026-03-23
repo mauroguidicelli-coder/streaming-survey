@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Streaming Survey 2025</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0b0e17;
+    --surface: #131726;
+    --surface2: #1a1f30;
+    --border: rgba(255,255,255,0.08);
+    --text: #e8eaf2;
+    --muted: #7a7f96;
+    --accent: #5b8fff;
+    --accent2: #ff6b6b;
+    --accent3: #43d9a2;
+    --accent4: #ffb347;
+    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(91,143,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(91,143,255,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    position: relative;
+    z-index: 1;
+    padding: 60px 48px 40px;
+    max-width: 960px;
+    margin: 0 auto;
+    animation: fadeUp .6s ease both;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  h1 {
+    font-size: clamp(36px, 6vw, 60px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -.02em;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    font-size: 16px;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 500px;
+    line-height: 1.6;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 960px;
+    margin: 0 auto 40px;
+    padding: 0 48px;
+    position: relative; z-index: 1;
+    animation: fadeUp .6s .1s ease both;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    border-radius: 16px 16px 0 0;
+  }
+  .stat-card:nth-child(1)::after { background: linear-gradient(90deg, #5b8fff, transparent); }
+  .stat-card:nth-child(2)::after { background: linear-gradient(90deg, #43d9a2, transparent); }
+  .stat-card:nth-child(3)::after { background: linear-gradient(90deg, #ffb347, transparent); }
+
+  .stat-label { font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+  .stat-value { font-size: 32px; font-weight: 800; color: #fff; }
+  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 48px 80px;
+    position: relative; z-index: 1;
+    animation: fadeUp .6s .2s ease both;
+  }
+
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+  }
+
+  .nav-btn {
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .nav-btn:hover { border-color: rgba(91,143,255,.4); color: var(--text); }
+  .nav-btn.active {
+    border-color: var(--accent);
+    color: #fff;
+    background: rgba(91,143,255,.15);
+  }
+
+  .panel { display: none; }
+  .panel.visible {
+    display: block;
+    animation: fadeUp .3s ease both;
+  }
+
+  .panel-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .panel-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .bar-chart { display: flex; flex-direction: column; gap: 14px; }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 46px;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .bar-label {
+    font-size: 13px;
+    color: var(--text);
+    text-align: right;
+  }
+
+  .bar-track {
+    background: var(--surface2);
+    border-radius: 6px;
+    height: 32px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: growBar .5s ease forwards;
+  }
+
+  .bar-count {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .c1 { background: linear-gradient(90deg, #5b8fff, #3b6fd4); }
+  .c2 { background: linear-gradient(90deg, #43d9a2, #2ea87c); }
+  .c3 { background: linear-gradient(90deg, #ffb347, #e0902a); }
+  .c4 { background: linear-gradient(90deg, #ff6b6b, #d94040); }
+  .c5 { background: linear-gradient(90deg, #b47fff, #8a50e0); }
+  .c6 { background: linear-gradient(90deg, #7ddb6b, #4db33d); }
+  .c7 { background: linear-gradient(90deg, #888ea8, #60647a); }
+  .c8 { background: linear-gradient(90deg, #ff8fab, #d4537e); }
+
+  .note {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 20px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 10px; }
+  .tag {
+    background: rgba(91,143,255,.12);
+    color: #90b4ff;
+    border: 1px solid rgba(91,143,255,.25);
+    border-radius: 24px;
+    padding: 6px 16px;
+    font-size: 13px;
+  }
+  .tag.lg { font-size: 15px; padding: 8px 20px; background: rgba(91,143,255,.2); }
+  .tag.sm { font-size: 11px; opacity: 0.7; }
+
+  .conclusion {
+    margin-top: 24px;
+    padding: 20px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.7;
+  }
+  .conclusion strong { color: var(--accent); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes growBar {
+    to { transform: scaleX(1); }
+  }
+
+  @media (max-width: 640px) {
+    header, .stats, main { padding-left: 20px; padding-right: 20px; }
+    header { padding-top: 40px; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .stats .stat-card:last-child { grid-column: 1 / -1; }
+    .bar-row { grid-template-columns: 100px 1fr 36px; }
+    h1 { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">School Survey · 2025</div>
+  <h1>Streaming<br><span>Services</span></h1>
+  <p class="subtitle">A survey of 33 students on their streaming habits, preferences, and opinions.</p>
+</header>
+
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-label">Participants</div>
+    <div class="stat-value">33</div>
+    <div class="stat-sub">total responses</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Avg. daily usage</div>
+    <div class="stat-value">~50 <span style="font-size:18px;font-weight:400">min</span></div>
+    <div class="stat-sub">per day</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Top platform</div>
+    <div class="stat-value" style="font-size:26px">Netflix</div>
+    <div class="stat-sub">used by almost everyone</div>
+  </div>
+</div>
+
+<main>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="show('known', this)">Platforms known</button>
+    <button class="nav-btn" onclick="show('used', this)">Platforms used</button>
+    <button class="nav-btn" onclick="show('spending', this)">Monthly spending</button>
+    <button class="nav-btn" onclick="show('hours', this)">Daily usage</button>
+    <button class="nav-btn" onclick="show('tech', this)">Technical problems</button>
+    <button class="nav-btn" onclick="show('improve', this)">Improvements</button>
+    <button class="nav-btn" onclick="show('opinion', this)">General opinion</button>
+  </nav>
+
+  <div class="panel visible" id="known">
+    <div class="panel-title">Which platforms do you know?</div>
+    <div class="panel-desc">Mentions across all open-text responses (multiple answers possible)</div>
+    <div class="bar-chart" id="chart-known"></div>
+    <div class="note">Netflix is universally known. Disney+, Prime Video and Sky form a clear second tier.</div>
+  </div>
+
+  <div class="panel" id="used">
+    <div class="panel-title">Which platforms do you use?</div>
+    <div class="panel-desc">Active subscriptions reported by respondents</div>
+    <div class="bar-chart" id="chart-used"></div>
+    <div class="note">Bluesport ranks surprisingly high — likely popular among sports fans in the group.</div>
+  </div>
+
+  <div class="panel" id="spending">
+    <div class="panel-title">How much do you spend per month?</div>
+    <div class="panel-desc">Self-reported monthly costs in CHF</div>
+    <div class="bar-chart" id="chart-spending"></div>
+    <div class="note">The majority of respondents don't pay directly — their parents cover the subscriptions.</div>
+  </div>
+
+  <div class="panel" id="hours">
+    <div class="panel-title">How many hours per day?</div>
+    <div class="panel-desc">Self-reported daily streaming time</div>
+    <div class="bar-chart" id="chart-hours"></div>
+    <div class="note">Most students stream for 30 minutes to 1 hour daily — moderate usage overall.</div>
+  </div>
+
+  <div class="panel" id="tech">
+    <div class="panel-title">How often do you experience technical problems?</div>
+    <div class="panel-desc">Frequency of platform-related issues</div>
+    <div class="bar-chart" id="chart-tech"></div>
+    <div class="note">The vast majority say they rarely or never experience technical issues.</div>
+  </div>
+
+  <div class="panel" id="improve">
+    <div class="panel-title">What would make your streaming better?</div>
+    <div class="panel-desc">Most common improvement suggestions (grouped themes)</div>
+    <div class="bar-chart" id="chart-improve"></div>
+    <div class="note">Two clear themes dominate: consolidation of content and lower prices.</div>
+  </div>
+
+  <div class="panel" id="opinion">
+    <div class="panel-title">What's your general opinion?</div>
+    <div class="panel-desc">Qualitative themes extracted from open-text answers</div>
+    <div class="tag-cloud">
+      <span class="tag lg">👍 Positive / practical</span>
+      <span class="tag lg">😍 "I love them"</span>
+      <span class="tag">Great for home use</span>
+      <span class="tag">Perfect for rainy days</span>
+      <span class="tag">A bit expensive</span>
+      <span class="tag sm">Also educational</span>
+      <span class="tag sm">Too many separate platforms</span>
+      <span class="tag sm">Sometimes hard to navigate</span>
+      <span class="tag sm">Better than the cinema</span>
+    </div>
+    <div class="conclusion">
+      <strong>Overall:</strong> Respondents are overwhelmingly positive about streaming services, describing them as practical and convenient. The main criticisms centre on <strong>high costs</strong> and <strong>content fragmentation</strong> — people dislike having to subscribe to multiple platforms to access everything they want.
+    </div>
+  </div>
+</main>
+
+<script>
+  const data = {
+    known: [
+      { label: 'Netflix',     val: 100, count: '25+', c: 'c1' },
+      { label: 'Disney+',     val: 72,  count: '18',  c: 'c2' },
+      { label: 'Prime Video', val: 56,  count: '14',  c: 'c3' },
+      { label: 'Sky',         val: 36,  count: '9',   c: 'c4' },
+      { label: 'Hulu',        val: 20,  count: '5',   c: 'c5' },
+      { label: 'Apple TV',    val: 16,  count: '4',   c: 'c6' },
+      { label: 'Paramount+',  val: 16,  count: '4',   c: 'c7' },
+      { label: 'Bluesport',   val: 12,  count: '3',   c: 'c8' },
+    ],
+    used: [
+      { label: 'Netflix',     val: 85, count: '12', c: 'c1' },
+      { label: 'Disney+',     val: 50, count: '7',  c: 'c2' },
+      { label: 'Bluesport',   val: 42, count: '6',  c: 'c3' },
+      { label: 'Prime Video', val: 21, count: '3',  c: 'c4' },
+      { label: 'Paramount+',  val: 7,  count: '1',  c: 'c5' },
+    ],
+    spending: [
+      { label: "Don't know / parents", val: 80, count: '~13', c: 'c7' },
+      { label: '~14–15 CHF',           val: 22, count: '3',   c: 'c2' },
+      { label: '~20 CHF',              val: 22, count: '3',   c: 'c1' },
+      { label: '~30 CHF',              val: 22, count: '3',   c: 'c3' },
+      { label: '0 CHF (free)',         val: 15, count: '2',   c: 'c6' },
+      { label: '37–50 CHF',            val: 15, count: '2',   c: 'c4' },
+    ],
+    hours: [
+      { label: '30 min',     val: 80, count: '12', c: 'c1' },
+      { label: '1 h',        val: 60, count: '9',  c: 'c2' },
+      { label: '1 h 30 min', val: 27, count: '4',  c: 'c3' },
+      { label: '2 h',        val: 13, count: '2',  c: 'c4' },
+      { label: '2 h 30 min', val: 13, count: '2',  c: 'c5' },
+      { label: '3 h',        val: 7,  count: '1',  c: 'c6' },
+    ],
+    tech: [
+      { label: 'Never / Almost never', val: 75, count: '~19', c: 'c2' },
+      { label: 'Rarely',               val: 27, count: '~7',  c: 'c3' },
+      { label: 'Sometimes',            val: 10, count: '~2',  c: 'c4' },
+    ],
+    improve: [
+      { label: 'All in one place', val: 60, count: '~6', c: 'c1' },
+      { label: 'Cheaper / free',   val: 53, count: '~5', c: 'c3' },
+      { label: 'Fewer ads',        val: 21, count: '2',  c: 'c4' },
+      { label: 'More content',     val: 21, count: '2',  c: 'c2' },
+      { label: "It's fine",        val: 21, count: '2',  c: 'c6' },
+    ],
+  };
+
+  function buildChart(id) {
+    const el = document.getElementById('chart-' + id);
+    if (!el || el.dataset.built) return;
+    el.dataset.built = '1';
+    data[id].forEach((row, i) => {
+      const div = document.createElement('div');
+      div.className = 'bar-row';
+      div.innerHTML = `
+        <div class="bar-label">${row.label}</div>
+        <div class="bar-track">
+          <div class="bar-fill ${row.c}" style="width:${row.val}%;animation-delay:${0.05 + i * 0.07}s">${row.count}</div>
+        </div>
+        <div class="bar-count">${row.count}</div>
+      `;
+      el.appendChild(div);
+    });
+  }
+
+  function show(id, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('visible'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('visible');
+    btn.classList.add('active');
+    buildChart(id);
+  }
+
+  buildChart('known');
+</script>
+</body>
+</html>
